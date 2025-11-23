@@ -1,0 +1,213 @@
+# Ocean-Wind-Currents Simulation Configuration File
+
+# Data Sources Configuration
+data_sources:
+  copernicus:
+    # Copernicus Marine Service credentials
+    # Register at: https://marine.copernicus.eu/
+    username: ""  # Set your username here or use environment variable COPERNICUS_USERNAME
+    password: ""  # Set your password here or use environment variable COPERNICUS_PASSWORD
+    
+    # Default products
+    products:
+      wind: "GLOBAL_ANALYSISFORECAST_PHY_001_024"
+      currents: "GLOBAL_ANALYSISFORECAST_PHY_001_024"
+    
+    # Default variables
+    variables:
+      wind_u: "eastward_wind"
+      wind_v: "northward_wind"
+      current_u: "uo"
+      current_v: "vo"
+  
+  hycom:
+    # HYCOM OpenDAP server URLs
+    base_url: "https://tds.hycom.org/thredds/dodsC"
+    
+    # Default products
+    products:
+      glbv008: "GLBv0.08/expt_93.0"
+      glby008: "GLBy0.08/expt_93.0"
+    
+    # Variables
+    variables:
+      current_u: "water_u"
+      current_v: "water_v"
+      temperature: "water_temp"
+      salinity: "salinity"
+
+# Geographic Regions of Interest
+regions:
+  gulf_of_mexico:
+    name: "Gulf of Mexico"
+    lat_min: 18.0
+    lat_max: 31.0
+    lon_min: -98.0
+    lon_max: -80.0
+  
+  north_atlantic:
+    name: "North Atlantic"
+    lat_min: 30.0
+    lat_max: 50.0
+    lon_min: -80.0
+    lon_max: -40.0
+  
+  caribbean:
+    name: "Caribbean Sea"
+    lat_min: 10.0
+    lat_max: 25.0
+    lon_min: -85.0
+    lon_max: -60.0
+  
+  mediterranean:
+    name: "Mediterranean Sea"
+    lat_min: 30.0
+    lat_max: 46.0
+    lon_min: -6.0
+    lon_max: 37.0
+
+# Time Period Settings
+time_settings:
+  # Default time range (YYYY-MM-DD)
+  start_date: "2024-01-01"
+  end_date: "2024-01-07"
+  
+  # Time step for data retrieval (hours)
+  time_step: 3
+  
+  # Timezone
+  timezone: "UTC"
+
+# Visualization Parameters
+visualization:
+  # Figure settings
+  figure:
+    dpi: 300
+    figsize: [12, 8]
+    format: "png"
+  
+  # Map settings
+  map:
+    projection: "PlateCarree"  # Options: PlateCarree, Mercator, LambertConformal
+    add_coastlines: true
+    add_borders: true
+    add_gridlines: true
+    land_color: "lightgray"
+    ocean_color: "lightblue"
+  
+  # Quiver plot settings
+  quiver:
+    scale: 50
+    scale_units: "inches"
+    width: 0.003
+    headwidth: 3
+    headlength: 4
+    headaxislength: 3.5
+    color_by_magnitude: true
+    colormap: "viridis"
+    alpha: 0.8
+  
+  # Animation settings
+  animation:
+    fps: 10
+    bitrate: 1800
+    codec: "h264"
+    interval: 100  # milliseconds between frames
+
+# Simulation Settings
+simulation:
+  # Particle tracking
+  particle_tracker:
+    # Integration method: "euler", "rk2", "rk4"
+    integration_method: "rk4"
+    
+    # Time step for integration (seconds)
+    dt: 3600  # 1 hour
+    
+    # Wind drift coefficient (0 to 1, typically 0.02-0.04 for surface drift)
+    wind_drift_coefficient: 0.03
+    
+    # Number of particles
+    n_particles: 100
+    
+    # Initial particle distribution
+    distribution: "grid"  # Options: grid, random, point, line
+    
+    # Boundary conditions
+    boundary:
+      # What to do when particles reach boundaries
+      # Options: "stop", "reflect", "periodic"
+      type: "stop"
+      
+      # Apply land mask
+      apply_land_mask: true
+  
+  # Physics parameters
+  physics:
+    # Earth parameters
+    earth_radius: 6371000  # meters
+    omega: 7.2921e-5  # Earth's angular velocity (rad/s)
+    
+    # Water properties
+    water_density: 1025  # kg/m³
+    
+    # Coriolis parameter (computed from latitude if not specified)
+    use_coriolis: true
+
+# Analysis Settings
+analysis:
+  # Statistical analysis
+  statistics:
+    compute_mean: true
+    compute_std: true
+    compute_percentiles: [10, 25, 50, 75, 90]
+  
+  # Correlation analysis
+  correlation:
+    method: "pearson"  # Options: pearson, spearman, kendall
+    significance_level: 0.05
+  
+  # Wind rose settings
+  wind_rose:
+    n_directions: 16
+    bins: [0, 2, 4, 6, 8, 10, 15, 20]
+    units: "m/s"
+
+# Output Settings
+output:
+  # Base directory for outputs
+  base_dir: "output"
+  
+  # Create subdirectories
+  create_subdirs: true
+  
+  # Subdirectory structure
+  subdirs:
+    figures: "figures"
+    animations: "animations"
+    data: "data"
+    trajectories: "trajectories"
+  
+  # File naming
+  timestamp_format: "%Y%m%d_%H%M%S"
+  include_timestamp: true
+
+# Logging Settings
+logging:
+  level: "INFO"  # Options: DEBUG, INFO, WARNING, ERROR, CRITICAL
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file: "ocean_simulation.log"
+
+# Performance Settings
+performance:
+  # Use parallel processing where available
+  use_parallel: true
+  
+  # Number of workers (null for auto-detect)
+  n_workers: null
+  
+  # Chunk size for large datasets
+  chunk_size: 1000
+  
+  # Memory limits
+  max_memory_gb: 4
