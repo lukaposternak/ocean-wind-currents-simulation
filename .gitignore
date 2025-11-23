@@ -122,8 +122,8 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# Data files
-data/
+# Data files (but not src/data/ source code)
+/data/
 *.nc
 *.nc4
 *.grib
